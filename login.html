@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>登录 | CrushZJU</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1 class="title">✨ 欢迎回来 ✨</h1>
+            <p class="subtitle">请登录您的账号</p>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>学号</label>
+                    <input type="text" id="studentId" placeholder="请输入学号" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" id="password" placeholder="请输入密码" required>
+                </div>
+                
+                <div id="message" class="message" style="display: none;"></div>
+                
+                <button type="submit" class="btn">登录</button>
+            </form>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <p style="font-size: 14px; color: #666;">
+                    还没有账号？<a href="/register" style="color: #2c5aa6; text-decoration: none;">立即注册</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/js/main.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const studentId = document.getElementById('studentId').value.trim();
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ student_id: studentId, password: password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    window.location.href = '/welcome';
+                } else {
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'message error';
+                    messageDiv.style.display = 'block';
+                }
+            } catch (error) {
+                messageDiv.textContent = '登录失败，请重试';
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

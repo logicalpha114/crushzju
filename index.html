@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CrushZJU | 心灵共振平台</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- 网站背景图：/www/wwwroot/www.crushzju.cn/800-210520100024-50.jpg 不足部分由底部蓝色渐变填充 -->
+    <style>
+        /* 背景图 + 底部渐变填充，支持内容滚动 */
+        body {
+            background: linear-gradient(to bottom, rgba(44, 90, 166, 0.75) 0%, #1e3a6b 100%), url('/800-210520100024-50.jpg');
+            background-size: cover, cover;
+            background-position: center top, center top;
+            background-attachment: scroll, fixed;  /* 图片固定，渐变随滚动，底部自然延伸 */
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            height: auto;
+        }
+        
+        /* 容器自适应滚动 */
+        .container {
+            min-height: auto;
+            padding: 30px 20px 80px 20px;
+            display: block;
+        }
+        
+        /* 卡片样式增强，略微透明保证背景透出，但文字清晰 */
+        .card {
+            max-width: 700px;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(1px);
+            border-radius: 40px;
+            padding: 35px 30px 45px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+        
+        /* 新增说明区块样式，与原有风格统一 */
+        .info-box {
+            background: #f0f5fe;
+            border-left: 5px solid #2c5aa6;
+            padding: 18px 22px;
+            border-radius: 24px;
+            margin: 30px 0 25px;
+            text-align: left;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        .info-box p {
+            margin: 8px 0;
+            line-height: 1.5;
+            color: #1e3a6b;
+            font-size: 15px;
+        }
+        .info-box strong {
+            color: #2c5aa6;
+            font-weight: 600;
+        }
+        .future-list {
+            margin: 20px 0 10px;
+            padding-left: 20px;
+        }
+        .future-list li {
+            margin: 12px 0;
+            color: #2c3e66;
+        }
+        .to-be-continued {
+            text-align: center;
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            margin-top: 35px;
+            padding-top: 15px;
+            border-top: 1px dashed #cbdff2;
+            color: #2c5aa6;
+        }
+        hr {
+            margin: 20px 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #bdd4f0, transparent);
+        }
+        @media (max-width: 650px) {
+            .card { padding: 28px 20px; }
+            .info-box { padding: 14px 18px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏文字保持不变 -->
+    <div class="sidebar-left">心灵的相似算法，在此实现</div>
+    <div class="sidebar-right">性格的互补算法，带来惊喜</div>
+    
+    <div class="container">
+        <div class="card">
+            <h1 class="title">Welcome to crushzju.cn</h1>
+            <p class="subtitle">心灵共振，从此开始</p>
+            
+            <!-- 倒计时模块 (原样保留) -->
+            <div class="countdown">
+                <p>距离下一次共鸣的时刻：</p>
+                <div class="countdown-timer">
+                    <div class="countdown-item"><div class="countdown-number" id="days">00</div><div class="countdown-label">天</div></div>
+                    <div class="countdown-item"><div class="countdown-number" id="hours">00</div><div class="countdown-label">时</div></div>
+                    <div class="countdown-item"><div class="countdown-number" id="minutes">00</div><div class="countdown-label">分</div></div>
+                    <div class="countdown-item"><div class="countdown-number" id="seconds">00</div><div class="countdown-label">秒</div></div>
+                </div>
+            </div>
+            
+            <!-- 当前等候人数 -->
+            <div class="countdown">
+                <p>已有 <span class="stat-number" id="userCount">{{ user_count }}</span> 人在此静候您的到来</p>
+            </div>
+            
+            <!-- ========= 新增：“这是什么？如何运作？” 双文本框 ========= -->
+            <div class="info-box">
+                <p><strong>✨ 这是什么？</strong><br>
+                基于深度心理问卷与浙大同学特质匹配的「心灵共振」计划。我们通过82道心理学维度的题目，结合性格互补与相似算法，在茫茫人海中寻找与你同频的TA。注：仅限浙大校内邮箱注册</p>
+                <p><strong>⚙️ 如何运作？</strong><br>
+                认真如实填写一份深度心理问卷，算法会根据所有报名的人里面找到对你来说最合适的那个TA。<br>
+                倒计时结束时，陆陆续续公布答案，请注意在浙大邮箱查收。<br>
+                <span style="font-size: 14px; color: #4a6faa;">接下来交给你们，记得及时联系，你们已经是有了心灵同频的人了。</span></p>
+            </div>
+            
+            <!-- 未来功能预告区块（加长页面内容，支持滑动） -->
+            <div style="margin: 25px 0 15px;">
+                <p style="font-weight: 600; color: #2c5aa6; font-size: 16px;">🚀 To be continued......</p>
+                <p>未来我们还会陆陆续续推出更新的功能，不仅是“心灵共振”，还有“爱好同频”<br>
+                还有附近的人，让你在图书馆/教室的闲暇之余认识一位新朋友。<br>
+                敬请期待。。。</p>
+            </div>
+            
+            <!-- 原启动按钮区域 -->
+            <hr>
+            <div style="text-align: center; margin: 30px 0 15px;">
+                <p style="font-size: 18px; font-weight: 500;">准备好了吗？心灵捕手？</p>
+                <p style="font-size: 12px; color: #999; cursor: pointer;" id="startBtn">Touch here to start</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/js/main.js"></script>
+    <script>
+        // 确保倒计时函数存在（main.js 中已定义 updateCountdown）
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+        
+        document.getElementById('startBtn').addEventListener('click', async function() {
+            const response = await fetch('/api/check_login');
+            const data = await response.json();
+            
+            if (data.logged_in) {
+                if (data.completed) {
+                    alert('您已经填完问卷啦！请耐心等待那个TA');
+                } else {
+                    window.location.href = '/survey';
+                }
+            } else {
+                window.location.href = '/register';
+            }
+        });
+    </script>
+</body>
+</html>
