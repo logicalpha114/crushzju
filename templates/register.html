@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>注册 | CrushZJU</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- 网站背景图 - 在此处添加背景图 -->
+</head>
+<body>
+    <div class="container">
+        <div class="card card-large">
+            <h1 class="title">✨ 注册新账号 ✨</h1>
+            <p class="subtitle">填写信息，开启心灵之旅</p>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>📧 学号（ZJU邮箱前缀）</label>
+                    <div class="code-input-group">
+                        <input type="text" id="studentId" placeholder="请输入学号" required>
+                        <span style="line-height: 44px;">@zju.edu.cn</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>🔐 验证码</label>
+                    <div class="code-input-group">
+                        <input type="text" id="verifyCode" placeholder="请输入6位验证码" maxlength="6">
+                        <button type="button" id="sendCodeBtn" class="btn" style="width: auto;">发送验证码</button>
+                    </div>
+                    <div id="codeMessage" class="message" style="display: none;"></div>
+                </div>
+                
+                <div class="form-group"><label>👤 昵称</label><input type="text" id="nickname" required></div>
+                <div class="form-group"><label>🔒 密码（8位及以上）</label><input type="password" id="password" required></div>
+                <div class="form-group"><label>🔒 确认密码</label><input type="password" id="confirmPassword" required></div>
+                <div class="form-group"><label>📱 手机号</label><input type="tel" id="phone" placeholder="11位手机号" required></div>
+                
+                <div class="form-group">
+                    <label>👥 性别</label>
+                    <div class="option-group">
+                        <label><input type="radio" name="gender" value="男"> 男</label>
+                        <label><input type="radio" name="gender" value="女"> 女</label>
+                        <label><input type="radio" name="gender" value="其他"> 其他</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>💖 取向</label>
+                    <div class="option-group">
+                        <label><input type="radio" name="orientation" value="straight"> straight</label>
+                        <label><input type="radio" name="orientation" value="G"> G</label>
+                        <label><input type="radio" name="orientation" value="L"> L</label>
+                    </div>
+                    <div id="subG" class="sub-option-group">
+                        <label>细分取向：</label>
+                        <div class="option-group">
+                            <label><input type="radio" name="subG" value="top"> top</label>
+                            <label><input type="radio" name="subG" value="bottom"> bottom</label>
+                            <label><input type="radio" name="subG" value="ver"> ver</label>
+                        </div>
+                    </div>
+                    <div id="subL" class="sub-option-group">
+                        <label>细分取向：</label>
+                        <div class="option-group">
+                            <label><input type="radio" name="subL" value="T"> T</label>
+                            <label><input type="radio" name="subL" value="P"> P</label>
+                            <label><input type="radio" name="subL" value="H"> H</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>📚 年级</label>
+                    <select id="grade">
+                        <option>大一</option><option>大二</option><option>大三</option><option>大四</option>
+                        <option>大五</option><option>研一</option><option>研二</option><option>研三</option>
+                        <option>博一</option><option>博二</option><option>博三及以上</option>
+                    </select>
+                </div>
+                
+                <div class="form-group"><label>🎂 生日</label><input type="date" id="birthday" required></div>
+                
+                <button type="submit" class="btn">确认注册</button>
+            </form>
+            
+            <div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #e0e0e0;">
+                <p style="font-size: 14px; color: #666;">
+                    已有账号？<a href="/login" style="color: #2c5aa6; text-decoration: none; font-weight: 500;">请点此登录</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/main.js"></script>
+<script>
+    function showMessage(element, msg, type) {
+        element.textContent = msg;
+        element.className = `message ${type}`;
+        element.style.display = 'block';
+        setTimeout(() => {
+            element.style.display = 'none';
+        }, 3000);
+    }
+    
+    let canSend = true;
+    let verified = false;
+    
+    const orientationRadios = document.querySelectorAll('input[name="orientation"]');
+    const subG = document.getElementById('subG');
+    const subL = document.getElementById('subL');
+    
+    orientationRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            subG.classList.remove('active');
+            subL.classList.remove('active');
+            if (this.value === 'G') subG.classList.add('active');
+            if (this.value === 'L') subL.classList.add('active');
+        });
+    });
+    
+    document.getElementById('sendCodeBtn').addEventListener('click', async function() {
+        const studentId = document.getElementById('studentId').value.trim();
+        if (!studentId) { alert('请输入学号'); return; }
+        if (!canSend) return;
+        
+        canSend = false;
+        let timeLeft = 60;
+        this.textContent = `${timeLeft}秒后重试`;
+        const timer = setInterval(() => {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                document.getElementById('sendCodeBtn').textContent = '发送验证码';
+                canSend = true;
+            } else {
+                document.getElementById('sendCodeBtn').textContent = `${timeLeft}秒后重试`;
+            }
+        }, 1000);
+        
+        const res = await fetch('/api/send_code', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({student_id: studentId})
+        });
+        const data = await res.json();
+        const msgDiv = document.getElementById('codeMessage');
+        showMessage(msgDiv, data.message, data.success ? 'success' : 'error');
+    });
+    
+    let verifyTimeout;
+    document.getElementById('verifyCode').addEventListener('input', function() {
+        clearTimeout(verifyTimeout);
+        verifyTimeout = setTimeout(async () => {
+            const studentId = document.getElementById('studentId').value.trim();
+            const code = this.value.trim();
+            if (!studentId || !code || code.length !== 6) return;
+            
+            const res = await fetch('/api/verify_code', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({student_id: studentId, code: code})
+            });
+            const data = await res.json();
+            const msgDiv = document.getElementById('codeMessage');
+            showMessage(msgDiv, data.message, data.success ? 'success' : 'error');
+            verified = data.success;
+        }, 500);
+    });
+    
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!verified) { alert('请先验证邮箱'); return; }
+        
+        const studentId = document.getElementById('studentId').value.trim();
+        const nickname = document.getElementById('nickname').value.trim();
+        const password = document.getElementById('password').value;
+        const confirm = document.getElementById('confirmPassword').value;
+        const phone = document.getElementById('phone').value.trim();
+        const gender = document.querySelector('input[name="gender"]:checked')?.value;
+        const orientation = document.querySelector('input[name="orientation"]:checked')?.value;
+        const grade = document.getElementById('grade').value;
+        const birthday = document.getElementById('birthday').value;
+        
+        let sub = '';
+        if (orientation === 'G') sub = document.querySelector('input[name="subG"]:checked')?.value || '';
+        if (orientation === 'L') sub = document.querySelector('input[name="subL"]:checked')?.value || '';
+        
+        if (!nickname) { alert('请输入昵称'); return; }
+        if (password.length < 8) { alert('密码至少8位'); return; }
+        if (password !== confirm) { alert('密码不一致'); return; }
+        if (!phone || phone.length !== 11) { alert('手机号格式错误'); return; }
+        if (!gender) { alert('请选择性别'); return; }
+        if (!orientation) { alert('请选择取向'); return; }
+        if (orientation === 'G' && !sub) { alert('请选择细分取向'); return; }
+        if (orientation === 'L' && !sub) { alert('请选择细分取向'); return; }
+        const res = await fetch('/api/register', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                student_id: studentId,
+                nickname: nickname,
+                password: password,
+                confirm_password: confirm,
+                phone: phone,
+                gender: gender,
+                orientation: orientation,
+                sub_orientation: sub,
+                grade: grade,
+                birthday: birthday
+            })
+        });
+        
+        
+        const data = await res.json();
+        if (data.success) {
+            window.location.href = '/ready';
+        } else {
+            alert(data.message);
+        }
+    });
+</script>
+</body>
+</html>

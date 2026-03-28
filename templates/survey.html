@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>心理问卷 | CrushZJU</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .survey-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .survey-card {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .question-item {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 4px solid #2c5aa6;
+        }
+        .question-text {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: #333;
+            line-height: 1.4;
+        }
+        .question-number {
+            display: inline-block;
+            background: #2c5aa6;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        .rating-options {
+            display: flex;
+            justify-content: space-between;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .rating-option {
+            flex: 1;
+            text-align: center;
+            min-width: 70px;
+        }
+        .rating-option input {
+            display: none;
+        }
+        .rating-option label {
+            display: block;
+            padding: 8px 5px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+        .rating-option input:checked + label {
+            background: linear-gradient(135deg, #2c5aa6 0%, #4a7cbc 100%);
+            color: white;
+            border-color: #2c5aa6;
+        }
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(135deg, #2c5aa6 0%, #4a7cbc 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+        .complete-btn {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .btn-large {
+            padding: 15px 40px;
+            font-size: 18px;
+        }
+        @media (max-width: 768px) {
+            .rating-option {
+                min-width: 55px;
+            }
+            .rating-option label {
+                font-size: 9px;
+                padding: 6px 3px;
+            }
+            .question-text {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="survey-container">
+        <div class="survey-card">
+            <h1 class="title" style="font-size: 24px;">📝 心理问卷</h1>
+            <p class="subtitle">请根据真实感受选择，共82题</p>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <form id="surveyForm">
+                <div id="questionsContainer"></div>
+                
+                <div class="complete-btn">
+                    <button type="button" class="btn btn-large" id="completeBtn">已完成</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="/static/js/main.js"></script>
+    <script>
+        // 82道题目
+        const questions = [
+            "我经常作出一些不负责任的行为",
+            "我有恒心，能坚持把事情做完",
+            "我觉得大部分人基本上都是心怀善意的",
+            "我能容易地融入人比较多的聚会",
+            "我很少觉得兴奋或者特别想要做什么",
+            "我常常是仔细考虑之后才作出决定",
+            "我不太关心别人是否收到不公正的待遇",
+            "我是个勇于冒险，突破常规的人",
+            "别人一句漫不经心的话，我常常会联想到自己身上",
+            "我爱说话，健谈",
+            "当别人向我诉说不幸时，我常常感到难过",
+            "我希望成为领导者而不是被领导者",
+            "我经常觉得自己难以融入所在的生活或工作环境",
+            "我认为爱情要么是一百分，要么是零分",
+            "与人发生冲突时，为了争一口气，常常得豁出去",
+            "我认为没有必要关注自己的内心感受",
+            "无论情绪多么糟糕，我都努力去想些愉快的事情",
+            "我觉得诗歌，戏剧或哲学很无聊",
+            "我情绪稳定，不易生气",
+            "我不相信别人，怀疑别人的意图",
+            "我有创意，能想出新点子，乐于接受新事物",
+            "我富有执行力，不拖泥带水",
+            "我认为感情不能藕断丝连，必须应断全断，一点不留",
+            "我坚持自己的立场，为自己想要得到的而斗争",
+            "我今天产生了一个想法，睡一觉醒来之后就会改变",
+            "当我生病时，总能得到家人，亲友的照顾",
+            "常幻想自己有克服困难的超人本领",
+            "我常责怪自己没出息",
+            "我常认为算命和星座是有用的",
+            "我努力去改变现状，使情况向好的一面转化",
+            "我避开困难以求心中宁静",
+            "我常以无所谓的态度来掩饰内心的感受",
+            "我常认为没有必要那么费力去争成败",
+            "我常喜欢找人聊天以减轻烦恼",
+            "在有难处的时候，家庭成员都会尽最大的努力相互支持",
+            "在我们的家庭中每个成员都可以随便发表自己的意见",
+            "家庭成员之间都熟悉每个成员的亲密朋友",
+            "我喜欢和我的家人们共处",
+            "父母要求我回到家里必须向他们说明我在外面做了什么事情",
+            "我觉得父母干涉我做的任何一件事",
+            "我能感受到父母对我的喜爱",
+            "我觉得父母允许我在某些方面有独到之处",
+            "在我小时候，父母曾经当着别人的面打我或者训斥我",
+            "父母常以不能娇惯我为借口而不满足我的要求",
+            "父母常允许我到我喜欢去的地方，而他们又不会过分担心",
+            "父母经常因为我而自豪",
+            "我的童年是美好的",
+            "我觉得我的童年受到过躯体虐待",
+            "童年时期总是有人嘲笑我，有人憎恨我",
+            "我希望父母从来没有生过我",
+            "我喜欢自己独自待着，而不太喜欢与其他人交流",
+            "我时常担心被朋友或恋人抛弃",
+            "我发现与人亲近比较容易",
+            "能依赖别人让我很舒服",
+            "我想与人亲近，但又担心自己会受到伤害",
+            "我在亲密关系中常常口是心非，但又希望对方能理解自己",
+            "我不相信对方会喜欢真实的自己",
+            "我控制欲强，很难建立起边界感或尊重与他人的边界",
+            "当出现误会时，我能与他人理性沟通",
+            "我的见解和能力超过一般人",
+            "遇到挫折时，我能很快地恢复过来",
+            "我正在为实现自己的目标而努力",
+            "我觉得前途充满希望",
+            "我的学习成绩不太好",
+            "我学习时心情平静，能够专注",
+            "我觉得学习枯燥乏味",
+            "人生苦短，应该及时行乐",
+            "人活着应该有不平凡的目标和使命",
+            "安稳的生活要比追求冒险的人生更好",
+            "陪伴和情感支持要大于财富，权力和名望",
+            "拥有自由和独立要比稳定的工作更重要",
+            "社会地位和财富对我来说很重要",
+            "我在择偶时会成熟考虑，而不是单纯看感觉",
+            "我能很快地从一段破裂的感情关系中走出来",
+            "世界是公平的，善有善报，恶有恶报",
+            "比起改变世界，更重要的是适应环境",
+            "人各有命，我相信冥冥之中自有天意",
+            "我觉得这个社会是弱肉强食的",
+            "我相信日久生情，而不是一见钟情",
+            "我希望恋爱关系中能追求新鲜与刺激感",
+            "我能接受另一半有适当数量的异性朋友",
+            "我能够接受并理解对方的兴趣爱好，并尽可能给予支持"
+        ];
+        
+        // 选项配置
+        const options = [
+            { value: -3, label: '非常不同意' },
+            { value: -2, label: '基本不同意' },
+            { value: -1, label: '有点不同意' },
+            { value: 1, label: '有点同意' },
+            { value: 2, label: '基本同意' },
+            { value: 3, label: '非常同意' }
+        ];
+        
+        let answers = {};
+        let totalQuestions = questions.length;
+        
+        // 渲染题目
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            
+            questions.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'question-item';
+                qDiv.dataset.qid = index;
+                
+                qDiv.innerHTML = `
+                    <div class="question-text">
+                        <span class="question-number">${index + 1}</span>
+                        ${q}
+                    </div>
+                    <div class="rating-options" data-qid="${index}">
+                        ${options.map(opt => `
+                            <div class="rating-option">
+                                <input type="radio" name="q${index}" value="${opt.value}" id="q${index}_${opt.value}">
+                                <label for="q${index}_${opt.value}">${opt.label}</label>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                // 绑定事件
+                const radios = qDiv.querySelectorAll('input[type="radio"]');
+                radios.forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        answers[index] = parseInt(this.value);
+                        updateProgress();
+                    });
+                });
+                
+                // 恢复已选答案
+                if (answers[index] !== undefined) {
+                    const checkedRadio = qDiv.querySelector(`input[value="${answers[index]}"]`);
+                    if (checkedRadio) checkedRadio.checked = true;
+                }
+                
+                container.appendChild(qDiv);
+            });
+        }
+        
+        function updateProgress() {
+            const answered = Object.keys(answers).length;
+            const percent = (answered / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+        
+        // 提交问卷
+        document.getElementById('completeBtn').addEventListener('click', async function() {
+            const answeredCount = Object.keys(answers).length;
+            if (answeredCount < totalQuestions) {
+                alert(`请回答完所有问题！已完成 ${answeredCount}/${totalQuestions}`);
+                return;
+            }
+            
+            // 按顺序整理答案
+            const answerArray = [];
+            for (let i = 0; i < totalQuestions; i++) {
+                answerArray.push(answers[i]);
+            }
+            
+            try {
+                const response = await fetch('/api/submit_survey', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ answers: answerArray })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showModal('感谢您的填写，我们会尽力为您找到共鸣的那个TA', () => {
+                        window.location.href = '/';
+                    });
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('提交失败，请重试');
+            }
+        });
+        
+        // 页面加载时渲染
+        renderQuestions();
+        
+        function showModal(message, callback) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <p style="font-size: 18px; margin-bottom: 10px;">${message}</p>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            setTimeout(() => {
+                modal.remove();
+                if (callback) callback();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
